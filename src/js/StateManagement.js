@@ -11,6 +11,7 @@ export default class StateManagement {
     this.editorWorklog.init();
 
     this.editorInstance.addClickCreate(this.onClickCreate.bind(this));
+    this.editorInstance.addClickDelete(this.onClickDelete.bind(this));
     this.getInstances();
 
     this.ws.addEventListener('message', (e) => {
@@ -21,6 +22,10 @@ export default class StateManagement {
       }
       if (obj.status === 'Created') {
         this.editorInstance.addInstance(obj.data);
+        this.editorWorklog.drawLog(obj);
+      }
+      if (obj.status === 'Deleted') {
+        this.editorInstance.deleteInstace(obj.data.id);
         this.editorWorklog.drawLog(obj);
       }
     });
@@ -55,5 +60,18 @@ export default class StateManagement {
     const minutes = this._addZero(start.getMinutes());
     const time = `${date}.${month}.${year} ${hours}:${minutes}`;
     return time;
+  }
+
+  onClickDelete(event) {
+    console.log('delete', event);
+    const { target } = event;
+    const parent = target.closest('.instance');
+    console.log(parent);
+    const id = parent.getAttribute('id');
+    console.log(id);
+    this.ws.send(JSON.stringify({
+      command: 'Delete command',
+      id,
+    }));
   }
 }

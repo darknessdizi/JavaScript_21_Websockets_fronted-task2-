@@ -3,6 +3,7 @@ export default class WidgetInstances {
     this.conteiner = conteiner;
     this.field = null;
     this.createListeners = [];
+    this.deleteListeners = [];
   }
 
   init() {
@@ -10,6 +11,7 @@ export default class WidgetInstances {
     this.field = this.conteiner.querySelector('.instances-content');
     const link = this.conteiner.querySelector('.instances-link');
     link.addEventListener('click', (event) => this.onClickCreate(event));
+    this.field.addEventListener('click', (event) => this.onClickDelete(event));
   }
 
   addInstance(obj) {
@@ -26,8 +28,6 @@ export default class WidgetInstances {
     const state = WidgetInstances.addTagHTML(status, 'status-img');
     state.classList.add(obj.state.toLowerCase());
     const spanState = WidgetInstances.addTagHTML(status, 'status-state', 'span');
-    // const text = obj.state[0].toUpperCase() + obj.state.slice(1);
-    // spanState.textContent = text;
     spanState.textContent = obj.state;
 
     const actions = WidgetInstances.addTagHTML(div, 'instance-actions');
@@ -35,12 +35,17 @@ export default class WidgetInstances {
     spanHeader.textContent = 'Actions:';
     const btnPlay = WidgetInstances.addTagHTML(actions, 'action-run');
     if (obj.state === 'Stopped') {
-    // if (spanState.textContent === 'Stopped') {
       btnPlay.classList.add('play');
     } else {
       btnPlay.classList.add('pause');
     }
-    const btnDelete = WidgetInstances.addTagHTML(actions, 'action-delete');
+    WidgetInstances.addTagHTML(actions, 'action-delete');
+  }
+
+  deleteInstace(id) {
+    // Удаление элементов по id
+    const element = document.getElementById(id);
+    element.remove();
   }
 
   static addTagHTML(parent, className = null, type = 'div') {
@@ -60,5 +65,16 @@ export default class WidgetInstances {
   addClickCreate(callback) {
     // Сохраняет callback создания instance
     this.createListeners.push(callback);
+  }
+
+  onClickDelete(event) {
+    // Нажали кнопку удалить instance
+    event.preventDefault();
+    this.deleteListeners.forEach((o) => o.call(null, event));
+  }
+
+  addClickDelete(callback) {
+    // Сохраняет callback удаления instance
+    this.deleteListeners.push(callback);
   }
 }
