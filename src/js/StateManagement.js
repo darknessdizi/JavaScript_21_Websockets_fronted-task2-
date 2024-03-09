@@ -12,23 +12,50 @@ export default class StateManagement {
 
     this.editorInstance.addClickCreate(this.onClickCreate.bind(this));
     this.editorInstance.addClickDelete(this.onClickDelete.bind(this));
+    this.editorInstance.addClickChange(this.onClickChange.bind(this));
     this.getInstances();
 
     this.ws.addEventListener('message', (e) => {
       const obj = JSON.parse(e.data);
-      if (obj.status === 'Received') {
-        // отрисовать получение команды виджет справа
-        this.editorWorklog.drawLog(obj);
-      }
+      this.editorWorklog.drawLog(obj);
       if (obj.status === 'Created') {
         this.editorInstance.addInstance(obj.data);
-        this.editorWorklog.drawLog(obj);
       }
-      if (obj.status === 'Deleted') {
+      if (obj.status === 'Removed') {
         this.editorInstance.deleteInstace(obj.data.id);
-        this.editorWorklog.drawLog(obj);
+      }
+      if (obj.status === 'Stopped') {
+        this.editorInstance.pauseInstace(obj.data.id);
+      }
+      if (obj.status === 'Started') {
+        this.editorInstance.playInstace(obj.data.id);
       }
     });
+  }
+
+  onClickChange(element) {
+    // Callback - событие click нажатия на запуск/останов instance  
+    const actionDiv = element.querySelector('.action-run');
+    let typeCommand = null;
+    if (actionDiv.className.includes('play')) {
+      typeCommand = 'Start command';
+    } else {
+      typeCommand = 'Pause command';
+    }
+    const id = element.getAttribute('id');
+    this.ws.send(JSON.stringify({
+      command: typeCommand,
+      id,
+    }));
+  }
+
+  onClickDelete(element) {
+    // Callback - событие click нажатия на удаление instance 
+    const id = element.getAttribute('id');
+    this.ws.send(JSON.stringify({
+      command: 'Delete command',
+      id,
+    }));
   }
 
   onClickCreate() {
@@ -43,7 +70,6 @@ export default class StateManagement {
       method: 'GET',
     });
     const array = await response.json();
-    console.log('получили ответ', array);
     for (const obj of array) {
       this.editorInstance.addInstance(obj);
       this.editorWorklog.drawLog(obj);
@@ -51,7 +77,7 @@ export default class StateManagement {
   }
 
   getNewFormatDate(timestamp) {
-    // возвращает новый формат даты и времени
+    // Возвращает новый формат даты и времени
     let start = new Date(timestamp);
     const year = String(start.getFullYear()).slice(2);
     const month = this._addZero(start.getMonth());
@@ -60,18 +86,5 @@ export default class StateManagement {
     const minutes = this._addZero(start.getMinutes());
     const time = `${date}.${month}.${year} ${hours}:${minutes}`;
     return time;
-  }
-
-  onClickDelete(event) {
-    console.log('delete', event);
-    const { target } = event;
-    const parent = target.closest('.instance');
-    console.log(parent);
-    const id = parent.getAttribute('id');
-    console.log(id);
-    this.ws.send(JSON.stringify({
-      command: 'Delete command',
-      id,
-    }));
   }
 }

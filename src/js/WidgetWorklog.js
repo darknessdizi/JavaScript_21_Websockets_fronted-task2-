@@ -11,7 +11,6 @@ export default class WidgetWorklog {
 
   drawLog(obj) {
     // Отрисовка логов
-    console.log('Отрисовка логов', obj);
     const parent = WidgetWorklog.addTagHTML(this.field, 'log');
     const header = WidgetWorklog.addTagHTML(parent, 'log-header');
     const server = WidgetWorklog.addTagHTML(parent, 'log-server');
@@ -30,6 +29,7 @@ export default class WidgetWorklog {
       info.textContent = `INFO: ${obj.state}`;
       header.textContent = WidgetWorklog.getNewFormatDate(obj.time);
     }
+    this.field.scrollTop = this.field.scrollHeight; // прокручиваем элемент до конца
   }
 
   static getNewFormatDate(timestamp) {

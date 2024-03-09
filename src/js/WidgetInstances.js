@@ -4,6 +4,7 @@ export default class WidgetInstances {
     this.field = null;
     this.createListeners = [];
     this.deleteListeners = [];
+    this.changeListeners = [];
   }
 
   init() {
@@ -11,12 +12,11 @@ export default class WidgetInstances {
     this.field = this.conteiner.querySelector('.instances-content');
     const link = this.conteiner.querySelector('.instances-link');
     link.addEventListener('click', (event) => this.onClickCreate(event));
-    this.field.addEventListener('click', (event) => this.onClickDelete(event));
+    this.field.addEventListener('click', (event) => this.onClickForm(event));
   }
 
   addInstance(obj) {
     // Отрисовывает новый instance
-    console.log('новый instance', obj);
     const div = WidgetInstances.addTagHTML(this.field, 'instance');
     div.setAttribute('id', obj.id);
     const title = WidgetInstances.addTagHTML(div, 'instance-title');
@@ -40,12 +40,39 @@ export default class WidgetInstances {
       btnPlay.classList.add('pause');
     }
     WidgetInstances.addTagHTML(actions, 'action-delete');
+    this.field.scrollTop = this.field.scrollHeight; // прокручиваем элемент до конца
   }
 
   deleteInstace(id) {
     // Удаление элементов по id
     const element = document.getElementById(id);
     element.remove();
+  }
+
+  pauseInstace(id) {
+    // Отрисовка останова instance
+    const element = document.getElementById(id);
+    const actionDiv = element.querySelector('.action-run');
+    actionDiv.classList.remove('pause');
+    actionDiv.classList.add('play');
+    const status = element.querySelector('.status-img');
+    status.classList.remove('running');
+    status.classList.add('stopped');
+    const span = element.querySelector('.status-state');
+    span.textContent = 'Stopped';
+  }
+
+  playInstace(id) {
+    // Отрисовка запуска instance
+    const element = document.getElementById(id);
+    const actionDiv = element.querySelector('.action-run');
+    actionDiv.classList.remove('play');
+    actionDiv.classList.add('pause');
+    const status = element.querySelector('.status-img');
+    status.classList.remove('stopped');
+    status.classList.add('running');
+    const span = element.querySelector('.status-state');
+    span.textContent = 'Running';
   }
 
   static addTagHTML(parent, className = null, type = 'div') {
@@ -67,14 +94,27 @@ export default class WidgetInstances {
     this.createListeners.push(callback);
   }
 
-  onClickDelete(event) {
-    // Нажали кнопку удалить instance
+  onClickForm(event) {
+    // Нажали кнопку в поле instance
     event.preventDefault();
-    this.deleteListeners.forEach((o) => o.call(null, event));
+    const { target } = event;
+    const parent = target.closest('.instance');
+    if (target.className.includes('action-run')) {
+      this.changeListeners.forEach((o) => o.call(null, parent));
+      return;
+    }
+    if (target.className.includes('action-delete')) {
+      this.deleteListeners.forEach((o) => o.call(null, parent));
+    }
+  }
+
+  addClickChange(callback) {
+    // Сохраняет callback запуск/останов instance
+    this.changeListeners.push(callback);
   }
 
   addClickDelete(callback) {
-    // Сохраняет callback удаления instance
+    // Сохраняет callback удаление instance
     this.deleteListeners.push(callback);
   }
 }
