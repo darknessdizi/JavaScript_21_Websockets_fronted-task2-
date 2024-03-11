@@ -16,7 +16,7 @@ export default class WidgetWorklog {
     const server = WidgetWorklog.addTagHTML(parent, 'log-server');
     const info = WidgetWorklog.addTagHTML(parent, 'log-info');
     if (obj.data) {
-      server.textContent = 'Server: ' + obj.data.id;
+      server.textContent = `Server: ${obj.data.id}`;
       if (obj.status === 'Received') {
         info.textContent = `INFO: Received "${obj.data.command}"`;
         header.textContent = WidgetWorklog.getNewFormatDate(obj.data.time);
@@ -25,7 +25,7 @@ export default class WidgetWorklog {
         header.textContent = WidgetWorklog.getNewFormatDate(obj.data.time);
       }
     } else {
-      server.textContent = 'Server: ' + obj.id;
+      server.textContent = `Server: ${obj.id}`;
       info.textContent = `INFO: ${obj.state}`;
       header.textContent = WidgetWorklog.getNewFormatDate(obj.time);
     }

@@ -43,36 +43,31 @@ export default class WidgetInstances {
     this.field.scrollTop = this.field.scrollHeight; // прокручиваем элемент до конца
   }
 
-  deleteInstace(id) {
+  static deleteInstace(id) {
     // Удаление элементов по id
     const element = document.getElementById(id);
     element.remove();
   }
 
-  pauseInstace(id) {
-    // Отрисовка останова instance
+  static changeInstace(command, id) {
+    // Отрисовка останова/запуска instance
     const element = document.getElementById(id);
     const actionDiv = element.querySelector('.action-run');
-    actionDiv.classList.remove('pause');
-    actionDiv.classList.add('play');
     const status = element.querySelector('.status-img');
-    status.classList.remove('running');
-    status.classList.add('stopped');
     const span = element.querySelector('.status-state');
-    span.textContent = 'Stopped';
-  }
-
-  playInstace(id) {
-    // Отрисовка запуска instance
-    const element = document.getElementById(id);
-    const actionDiv = element.querySelector('.action-run');
-    actionDiv.classList.remove('play');
-    actionDiv.classList.add('pause');
-    const status = element.querySelector('.status-img');
-    status.classList.remove('stopped');
-    status.classList.add('running');
-    const span = element.querySelector('.status-state');
-    span.textContent = 'Running';
+    if (command === 'Stopped') {
+      actionDiv.classList.remove('pause');
+      actionDiv.classList.add('play');
+      status.classList.remove('running');
+      status.classList.add('stopped');
+      span.textContent = 'Stopped';
+    } else {
+      actionDiv.classList.remove('play');
+      actionDiv.classList.add('pause');
+      status.classList.remove('stopped');
+      status.classList.add('running');
+      span.textContent = 'Running';
+    }
   }
 
   static addTagHTML(parent, className = null, type = 'div') {

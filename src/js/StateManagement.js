@@ -22,19 +22,16 @@ export default class StateManagement {
         this.editorInstance.addInstance(obj.data);
       }
       if (obj.status === 'Removed') {
-        this.editorInstance.deleteInstace(obj.data.id);
+        this.editorInstance.constructor.deleteInstace(obj.data.id);
       }
-      if (obj.status === 'Stopped') {
-        this.editorInstance.pauseInstace(obj.data.id);
-      }
-      if (obj.status === 'Started') {
-        this.editorInstance.playInstace(obj.data.id);
+      if ((obj.status === 'Stopped') || (obj.status === 'Started')) {
+        this.editorInstance.constructor.changeInstace(obj.status, obj.data.id);
       }
     });
   }
 
   onClickChange(element) {
-    // Callback - событие click нажатия на запуск/останов instance  
+    // Callback - событие click нажатия на запуск/останов instance
     const actionDiv = element.querySelector('.action-run');
     let typeCommand = null;
     if (actionDiv.className.includes('play')) {
@@ -50,7 +47,7 @@ export default class StateManagement {
   }
 
   onClickDelete(element) {
-    // Callback - событие click нажатия на удаление instance 
+    // Callback - событие click нажатия на удаление instance
     const id = element.getAttribute('id');
     this.ws.send(JSON.stringify({
       command: 'Delete command',
@@ -78,7 +75,7 @@ export default class StateManagement {
 
   getNewFormatDate(timestamp) {
     // Возвращает новый формат даты и времени
-    let start = new Date(timestamp);
+    const start = new Date(timestamp);
     const year = String(start.getFullYear()).slice(2);
     const month = this._addZero(start.getMonth());
     const date = this._addZero(start.getDate());
