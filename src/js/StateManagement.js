@@ -1,9 +1,10 @@
 export default class StateManagement {
-  constructor(instance, worklog, port) {
+  constructor(instance, worklog, url) {
     this.editorInstance = instance;
     this.editorWorklog = worklog;
-    this.urlServer = `http://localhost:${port}`;
-    this.ws = new WebSocket(`ws://localhost:${port}`);
+    // this.urlServer = `http://localhost:${port}`;
+    this.urlServer = url;
+    this.ws = new WebSocket('wss://javascript-21-websockets-backend-task2.onrender.com');
   }
 
   init() {

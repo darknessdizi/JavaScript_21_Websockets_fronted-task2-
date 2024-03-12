@@ -8,6 +8,7 @@ const worklogBlock = document.querySelector('.conteiner-worklog');
 const instances = new WidgetInstances(instancesBlock);
 const worklog = new WidgetWorklog(worklogBlock);
 
-const port = 9000;
-const controller = new StateManagement(instances, worklog, port);
+// const port = 9000;
+const url = 'https://javascript-21-websockets-backend-task2.onrender.com';
+const controller = new StateManagement(instances, worklog, url);
 controller.init();
